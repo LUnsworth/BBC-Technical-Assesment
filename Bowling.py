@@ -20,19 +20,55 @@
 #
 # Import useful things:
 from random import randint
+import collections
 
-#Define Scoring nonesense
-def Score(shot,shnum):
-    score = shot
-    if shot == 10:
-        print('Strike!')
-    
-    return score
+#Algorithm for each turn.
+def PlayTurn():
+    Valid = False
+    ShTemp1 = 0
+    ShTemp2 = 0
+    Score = 0
+    while Valid == False:
+        ShTemp1 = input('Please enter your first shot: ')
+        Valid = TurnValidate(ShTemp1, ShTemp2)
+        if Valid == True:
+            ShTemp2 = input('Please enter your second shot: ')
+            Valid = TurnValidate(ShTemp1, ShTemp2)
+            if Valid == True:
+                Score = int(ShTemp1) + int(ShTemp2)
+    return Score    
+
+def TurnValidate(a, b):
+    Bool = False
+    #Perform check on shot types, ranges and total value of each.
+    if type(a) == 'int':
+        if a < 0 or a > 10:
+            print('Please enter score within valid boundaries of 0-10')
+    elif type(b) == 'int':
+        if a < 0 or a > 10:
+            print('Please enter score within valid boundaries of 0-10')
+    else:
+        if a < '0' or a > '10':
+            print('Please enter score within valid boundaries of 0-10')
+        else:
+            a = int(a)
+        elif (int(a) + int(b)) > 10: 
+            print("That's not a valid combination now, is it?")
+        else:
+            Bool = True
+    elif: type(a) == 'int':
+        if a < 0 or a > 10:
+            print('Please enter score within valid boundaries of 0-10')
+        elif (int(a) + int(b)) > 10:
+            print("That's not a valid combination now, is it?")
+        else:
+            Bool = True
+    return Bool
 
 print('Welcome to bowling')
 #Set up players
 x = 0
-Players = {}
+Players_key = {}
 
 while x == 0:
     Num = int(input('Enter number of players (max 6) '))
@@ -42,62 +78,71 @@ while x == 0:
     if Num > 0 and Num <= 6:
         while Num > 0:
             PName = input('Enter name of player: ')
-            Players[PName] = []
+            Players_key[PName] = []
             Num = Num - 1
             y+=1
         x = 1
     else:
         print('Please enter a sensible number of players')
+
+#Keep entered players in entry order
+#Players_actual = collections.OrderdDict(Players_key)
+
 '''
 #Display rules and start entering the stuffs.
 '''
 print("""
 Rules for playing:
-Enter shot score: 0-10.
+If you want to manually enter scores, enter: "Play"
 If you want to randomise the frame, enter: "Random"
 If you want to show the scoreboard, enter: "Score"
 If you're bored and want to go home, enter: "Quit"
 """)
-while 1:
-    Playscore = 0
-    Temp = ''
-    selection = ''
-    Quit = False
-    #Set loop going for 10 frames.
-    for frame in range(1,10):
-        print('Frame ',frame,':')
-        #Set loop going for each players turn within the frame.
-        for Temp in Players.keys():
-                #Finally, set loop for each shot within players turn.
-                if frame == 10:
-                    #Set 3 shots for final frame.
-                    x = 3
+Playscore = 0
+Temp = ''
+selection = ''
+Quit = False
+Turnvalidate = False
+#Set loop going for 10 frames.
+#3 frame test game
+for frame in range(1,3):
+    #Set loop going for each players turn within the frame.
+    for Temp in Players_key.keys():
+            #Finally, implement loop for each shot within players turn.
+            if frame == 10:
+                #Set 3 shots for final frame.
+                x = 3
+            else:
+                #2 shots otherwise.
+                x = 2
+            while Turnvalidate == False:
+                selection = input('Make selection: ')
+                if selection == 'Play' or selection == 'play':
+                    FrameScore = PlayTurn()
+                    print(FrameScore)
+                    #Players_key.keys[Temp].append(FrameScore)
+                elif selection == 'Random' or selection == 'random':
+                    print(randint(0,10))
+                elif selection == 'Quit' or selection == 'quit':
+                    Quit = True
+                    Turnvalidate = True
+                    break
                 else:
-                    #2 shots otherwise.
-                    x = 2
-                    
-                for turn in range(1,x):
-                    print(Temp,'make your choice for shot ', Temp,':')
-                    selection = input('')  
+                    print("""
+                    Not a valid choice... friendly reminder:
+                    If you want to manually enter scores, enter: "Play"
+                    If you want to randomise the frame, enter: "Random"
+                    If you want to show the scoreboard, enter: "Score"
+                    If you're bored and want to go home, enter: "Quit"
+                    """)
+            if Quit == True:
+                break
+            
+    if Quit == True:
+            break
+           
+#For shits n giggs.
 
-                    if selection >= '0' and selection <= '10':
-                        Playscore = Score(int(selection),turn)
-                        print(Playscore)                          
-                    elif selection[0:] == 'R' or selection[0:] == 'r':
-                        print(randint(0,10))
-                    elif selection == 'Quit' or selection == 'quit':
-                        Quit = True
-                        break
-                    else:
-                        print("""
-                        Not a valid choice... friendly reminder:
-                        Enter shot score: 0-10.
-                        If you want to randomise the frame, enter: "Random"
-                        If you want to show the scoreboard, enter: "Score"
-                        If you're bored and want to go home, enter: "Quit"
-                        """)
-        if Quit == True:
-             break
-    #For shits n giggs.
-print(Players)
+print(Players_key)
+print(Players_actual)
 print('Thank you for playing.')
