@@ -17,80 +17,23 @@
 #   - Testing:
 #       - MAKE SURE TO USE THE "XXX = INPUT('TESTING???') FOR CHECKING TO TEST.
 #
-#   - Create and populate list of players
-#   - THEN come up with way of 
-#
 #
 # Import useful things:
 from random import randint
 
-class Frame:
-    shot1 = 0
-    shot2 = 0
-    total = 0
-    strike = False
-    spare = False
-
-    def FrameTotal(a,b):
-        total = a + b
-        return total
-
-    def Bowling(shotscore,shotnum):
-        if shotnum == 1:
-            if shotscore == 10:
-                strike = True
-            shot1 = shotscore
-        else:
-            if shot1 + shotscore == 10:
-                spare = True
-            shot2 = shotscore
-        
-
-#class Player:
-    
-test = Frame()
-gamelist = []
-
-for count in range(0,9):
-    x = int(input('Enter shot 1: '))
-    #test.Bowling(x,1)
-    x = int(input('Enter shot 2: '))
-    #test.Bowling(x,2)
-    x = test.FrameTotal(test.shot1,test.shot2)
-    print(x)
-
-    test.total = (test.shot1 + test.shot2)
-
-    gamelist.append(test)
-    if test.strike == True:
+#Define Scoring nonesense
+def Score(shot,shnum):
+    score = shot
+    if shot == 10:
         print('Strike!')
-    else:
-        print('Shot 1 value is ',test.shot1)
-    if test.spare == True:
-        print('Spare, try hard.')
-    else:
-        print('Shot 2 value is ',test.shot2)
-        
-    print('Frame total is ',test.total)
     
-    '''
-    test.shot1 = count
-    test.shot2 = count + 1
-    print(test.shot1)
-    print(test.shot2)
-    gamelist.append(test)
+    return score
 
-for count in gamelist:
-    print(count.shot1)
-    print(count.shot2)
-   '''
-
-
-'''
 print('Welcome to bowling')
 #Set up players
 x = 0
-Players = {Name:'',Score:[]}
+Players = {}
+
 while x == 0:
     Num = int(input('Enter number of players (max 6) '))
     y = 1
@@ -99,7 +42,7 @@ while x == 0:
     if Num > 0 and Num <= 6:
         while Num > 0:
             PName = input('Enter name of player: ')
-            Players{Name:PName,Score:0}
+            Players[PName] = []
             Num = Num - 1
             y+=1
         x = 1
@@ -110,36 +53,51 @@ while x == 0:
 '''
 print("""
 Rules for playing:
-Enter first shot score: 0-10.
+Enter shot score: 0-10.
 If you want to randomise the frame, enter: "Random"
 If you want to show the scoreboard, enter: "Score"
 If you're bored and want to go home, enter: "Quit"
 """)
 while 1:
-#
+    Playscore = 0
     Temp = ''
+    selection = ''
     Quit = False
-    for Temp in Players.items():
-            print(Temp,'make your choice:')
-            selection = input('')  
-            if selection >= "0" and selection <= "10":
-                print(Frame.shot1))
-            elif selection[0] == 'Random' or selection[0] == 'random':
-                print(randint(0,10))
-            elif selection == 'Quit' or selection == 'quit':
-                Quit = True
-                break
-            else:
-                print("""
-                Rules for playing:
-                Enter first shot score: 0-10.
-                If you want to randomise the frame, enter: "Random"
-                If you want to show the scoreboard, enter: "Score"
-                If you're bored and want to go home, enter: "Quit"
-                """)
-    if Quit == True:
-            break
+    #Set loop going for 10 frames.
+    for frame in range(1,10):
+        print('Frame ',frame,':')
+        #Set loop going for each players turn within the frame.
+        for Temp in Players.keys():
+                #Finally, set loop for each shot within players turn.
+                if frame == 10:
+                    #Set 3 shots for final frame.
+                    x = 3
+                else:
+                    #2 shots otherwise.
+                    x = 2
+                    
+                for turn in range(1,x):
+                    print(Temp,'make your choice for shot ', Temp,':')
+                    selection = input('')  
+
+                    if selection >= '0' and selection <= '10':
+                        Playscore = Score(int(selection),turn)
+                        print(Playscore)                          
+                    elif selection[0:] == 'R' or selection[0:] == 'r':
+                        print(randint(0,10))
+                    elif selection == 'Quit' or selection == 'quit':
+                        Quit = True
+                        break
+                    else:
+                        print("""
+                        Not a valid choice... friendly reminder:
+                        Enter shot score: 0-10.
+                        If you want to randomise the frame, enter: "Random"
+                        If you want to show the scoreboard, enter: "Score"
+                        If you're bored and want to go home, enter: "Quit"
+                        """)
+        if Quit == True:
+             break
     #For shits n giggs.
 print(Players)
 print('Thank you for playing.')
-'''
