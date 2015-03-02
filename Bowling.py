@@ -24,46 +24,74 @@ import collections
 
 #Algorithm for each turn.
 def PlayTurn():
+    Shot1 = 0
+    Shot2 = 0
+    Score = 0
+    Strike = 0      #Set as 0 for normal frame, 1 for spare, 2 for strike.
+    
+    #Accept input for Frame and validate it.
+    Shot1, Shot2 = Validate()
+    print(Shot1)
+    print(Shot2)
+
+    #Do the shooting stuff.
+    if Shot1 == 10:
+        Score = 10
+        Strike = 2
+    elif Shot1 + Shot2 == 10:
+        Score = 10
+        Strike = 1
+    else:
+        Score = Shot1 + Shot2
+        Strike = 0
+    
+    return (Score, Strike)
+    
+def Validate():
     Valid = False
     ShTemp1 = 0
     ShTemp2 = 0
-    Score = 0
+    
     while Valid == False:
-        ShTemp1 = input('Please enter your first shot: ')
-        Valid = TurnValidate(ShTemp1, ShTemp2)
-        if Valid == True:
-            ShTemp2 = input('Please enter your second shot: ')
-            Valid = TurnValidate(ShTemp1, ShTemp2)
+        ShTemp1 = int(input('Please enter your first shot: '))
+        Valid = ShotValidate(ShTemp1)
+        
+    Valid = False
+    
+    while Valid == False:
+        if ShTemp1 != 10:
+            ShTemp2 = int(input('Please enter your second shot: '))
+            Valid = ShotValidate(ShTemp2)
             if Valid == True:
-                Score = int(ShTemp1) + int(ShTemp2)
-    return Score    
+                Valid = TurnValidate(int(ShTemp1),int(ShTemp2))
+                if Valid == False:
+                    print('Invalid second shot.')
+        else:
+            Valid = True
+    return (ShTemp1, ShTemp2)
 
-def TurnValidate(a, b):
+def ShotValidate(a):
+
     Bool = False
-    #Perform check on shot types, ranges and total value of each.
+
     if type(a) == 'int':
         if a < 0 or a > 10:
             print('Please enter score within valid boundaries of 0-10')
-    elif type(b) == 'int':
-        if a < 0 or a > 10:
-            print('Please enter score within valid boundaries of 0-10')
-    else:
+    elif type(a) == 'str':
         if a < '0' or a > '10':
             print('Please enter score within valid boundaries of 0-10')
-        else:
-            a = int(a)
-        elif (int(a) + int(b)) > 10: 
-            print("That's not a valid combination now, is it?")
-        else:
-            Bool = True
-    elif: type(a) == 'int':
-        if a < 0 or a > 10:
-            print('Please enter score within valid boundaries of 0-10')
-        elif (int(a) + int(b)) > 10:
-            print("That's not a valid combination now, is it?")
-        else:
-            Bool = True
+    else:
+        Bool = True
     return Bool
+
+def TurnValidate(a, b):
+    Bool = False
+    if a+b <= 10:
+        Bool = True
+    return Bool
+
+PlayTurn()
+
 
 print('Welcome to bowling')
 #Set up players
@@ -146,3 +174,4 @@ for frame in range(1,3):
 print(Players_key)
 print(Players_actual)
 print('Thank you for playing.')
+'''
