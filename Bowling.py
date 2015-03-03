@@ -17,6 +17,7 @@
 #   - Testing:
 #       - MAKE SURE TO USE THE "XXX = INPUT('TESTING???') FOR CHECKING TO TEST.
 #
+#  HELLO RACHAEL TELL ME THAT YOU CAN SEE THIS!!!! 
 #
 # Import useful things:
 from random import randint
