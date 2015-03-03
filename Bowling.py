@@ -34,6 +34,11 @@ def PlayTurn():
     print(Shot1)
     print(Shot2)
 
+    return (Shot1, Shot2)
+    
+    #Shoot(Shot1, Shot2)
+
+def Shoot(Sh1, Sh2):
     #Do the shooting stuff.
     if Shot1 == 10:
         Score = 10
@@ -44,8 +49,21 @@ def PlayTurn():
     else:
         Score = Shot1 + Shot2
         Strike = 0
-    
-    return (Score, Strike)
+    '''
+    for x in Strikecheck:
+        if Strikecheck[x] == 2:
+            if Shot1 == 10:
+                Score + Shot1
+                Strikecheck[x] - 1
+            else:
+                Score + Shot1
+                Score + Shot2
+                Strikecheck[x] - 1
+        if Strikecheck[x] == 1:
+            Score + Shot1
+            Strikecheck[x] - 1
+    '''
+    return Score
     
 def Validate():
     Valid = False
@@ -63,9 +81,12 @@ def Validate():
             ShTemp2 = int(input('Please enter your second shot: '))
             Valid = ShotValidate(ShTemp2)
             if Valid == True:
+                ShTemp1 = int(ShTemp1)
                 Valid = TurnValidate(int(ShTemp1),int(ShTemp2))
                 if Valid == False:
                     print('Invalid second shot.')
+                else:
+                    ShTemp2 = int(ShTemp2)
         else:
             Valid = True
     return (ShTemp1, ShTemp2)
@@ -74,14 +95,22 @@ def ShotValidate(a):
 
     Bool = False
 
-    if type(a) == 'int':
-        if a < 0 or a > 10:
+    if type(a) == int:
+        if a < 0:
             print('Please enter score within valid boundaries of 0-10')
-    elif type(a) == 'str':
-        if a < '0' or a > '10':
+        elif a > 10:
             print('Please enter score within valid boundaries of 0-10')
+        else:
+            Bool = True
+    elif type(a) == str:
+        if a < '0':
+            print('Please enter value above 0')
+        elif a > '10':
+            print('Please enter value less than 10')
+        else:
+            Bool = True
     else:
-        Bool = True
+        print('Incorrect entry... no idea what you did there')
     return Bool
 
 def TurnValidate(a, b):
@@ -90,9 +119,19 @@ def TurnValidate(a, b):
         Bool = True
     return Bool
 
-PlayTurn()
+def Listtest(Testlist):
+    del(Testlist[0])
+    Testlist.append(10)
+    return Testlist
+    
+Striker = [1,2,3]
+print(Striker)
+Player = ['Luke', Striker]
+Striker = Listtest(Striker)
+print(Player)
+#PlayTurn()
 
-
+'''
 print('Welcome to bowling')
 #Set up players
 x = 0
