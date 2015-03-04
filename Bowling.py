@@ -17,29 +17,30 @@
 #   - Testing:
 #       - MAKE SURE TO USE THE "XXX = INPUT('TESTING???') FOR CHECKING TO TEST.
 #
-#  HELLO RACHAEL TELL ME THAT YOU CAN SEE THIS!!!! 
 #
 # Import useful things:
 from random import randint
 import collections
 
 #Algorithm for each turn.
-def PlayTurn():
+def PlayTurn(Frame):
     Shot1 = 0
     Shot2 = 0
     Score = 0
     Strike = 0      #Set as 0 for normal frame, 1 for spare, 2 for strike.
     
-    #Accept input for Frame and validate it.
-    Shot1, Shot2 = Validate()
-    print(Shot1)
-    print(Shot2)
+    if Frame == 10:
+        print('woah')
+    else:
+        #Accept input for Frame and validate it.
+        Shot1, Shot2 = Validate()
 
     return (Shot1, Shot2)
     
     #Shoot(Shot1, Shot2)
 
-def Shoot(Sh1, Sh2):
+def Shoot(Shot1, Shot2, Strikecheck):
+    Score = 0
     #Do the shooting stuff.
     if Shot1 == 10:
         Score = 10
@@ -50,21 +51,34 @@ def Shoot(Sh1, Sh2):
     else:
         Score = Shot1 + Shot2
         Strike = 0
-    '''
+    Score = Shot1 + Shot2
+    pos = 0
+    temp = []
+    temp.append(Strikecheck)
     for x in Strikecheck:
-        if Strikecheck[x] == 2:
+        
+        #Get current value from list
+        if x == 2:
             if Shot1 == 10:
-                Score + Shot1
-                Strikecheck[x] - 1
+                Score += Shot1
+                #Tag on new strike check to temp list
+                temp.append(x-1)
             else:
-                Score + Shot1
-                Score + Shot2
-                Strikecheck[x] - 1
-        if Strikecheck[x] == 1:
-            Score + Shot1
-            Strikecheck[x] - 1
-    '''
-    return Score
+                Score += Shot1
+                Score += Shot2
+                temp.append(x-2)
+        if x == 1:
+            Score += Shot1
+            temp.append(x-1)
+        if x == 0:
+            #Append no strike/spare just to keep the list in place.
+            temp.append(x)
+    #Remove now obsolete strike check.       
+    del(temp[0])
+    del(temp[0])
+    #Add newly worked out stike check to end of list.
+    temp.append(Strike)
+    return (Score, temp)
     
 def Validate():
     Valid = False
@@ -119,17 +133,25 @@ def TurnValidate(a, b):
     if a+b <= 10:
         Bool = True
     return Bool
-
-def Listtest(Testlist):
-    del(Testlist[0])
-    Testlist.append(10)
-    return Testlist
     
-Striker = [1,2,3]
-print(Striker)
-Player = ['Luke', Striker]
-Striker = Listtest(Striker)
+Striker = [0,0]
+Score = 0
+Player = ['Luke', Score, Striker]
+
+for a in range(1,11):
+    print(a)
+    e = Player[1]
+    a, b = PlayTurn(a)
+    c, d = Shoot(a,b, Player[2])
+    e += c
+    del(Player[1])
+    del(Player[1])
+    Player.append(e)
+    Player.append(d)
+    print(Striker)
+    
 print(Player)
+
 #PlayTurn()
 
 '''
