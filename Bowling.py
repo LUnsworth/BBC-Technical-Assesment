@@ -2,20 +2,20 @@
 #
 # TODO:
 #   - Write scoring "engine"
-#       - Function?
+#      - Function?
 #   - Create class of "Frame".
-#       - Int Shot1
-#       - Int Shot2
-#       - Int Total (because of strikes and stuff)
+#      - Int Shot1
+#      - Int Shot2
+#      - Int Total (because of strikes and stuff)
 #   - Create class of "Player"
-#       - Array of 10 "Frame".
-#       - String "PlayerName"
-#       - Int "PlayerScore"
+#      - Array of 10 "Frame".
+#      - String "PlayerName"
+#      - Int "PlayerScore"
 #
 #   Create Dict of players.
 #   
 #   - Testing:
-#       - MAKE SURE TO USE THE "XXX = INPUT('TESTING???') FOR CHECKING TO TEST.
+#      - MAKE SURE TO USE THE "XXX = INPUT('TESTING???') FOR CHECKING TO TEST.
 #
 #
 # Import useful things:
@@ -23,66 +23,52 @@ from random import randint
 import collections
 
 #Algorithm for each turn.
-def PlayTurn(PlayerStrikes):
+def PlayTurn(Strike1, Strike2):
     Shot1 = 0
     Shot2 = 0
     Score = 0
-    Strike = 0      #Set as 0 for normal frame, 1 for spare, 2 for strike.
     
     #Accept input for Frame and validate it.
     Shot1, Shot2 = Validate()
+    #Calculate any additional Strike/Spare bonuses and return new strike flags.
+    Score, Strike1, Strike2 = Shoot(Shot1, Shot2, Strike1, Strike2)
 
-    Score, PlayerStrikes = Shoot(Shot1, Shot2, PlayerStrikes)
-
-    return (Score, PlayerStrikes)
+    return (Score, Strike1, Strike2)
     
-    #Shoot(Shot1, Shot2)
 
-def Shoot(Shot1, Shot2, Strikecheck):
+def Shoot(Shot1, Shot2, Strike1, Strike2):
     Score = 0
     #Do the shooting stuff.
-    if Shot1 == 10:
-        Score = 10
-        Strike = 2
-    elif Shot1 + Shot2 == 10:
-        Score = 10
-        Strike = 1
-    else:
-        Score = Shot1 + Shot2
-        Strike = 0
         
     Score = Shot1 + Shot2
-    pos = 0
-    temp = []
-    temp.append(Strikecheck)
-    for x in Strikecheck:
-        
-        #Get current value from list
-        if x == 2:
-            if Shot1 == 10:
+    Strikecheck = [Strike1, Strike2]
+    for x in range(0,2):
+            #Get current value from list
+            if Strikecheck[x] == 2:
+                if Shot1 == 10:
+                    Score += Shot1
+                    #Tag on new strike check to temp list
+                    Strikecheck[x] = 1
+                else:
+                    Score += Shot1
+                    Score += Shot2
+                    Strikecheck[x] = 0
+            elif Strikecheck[x] == 1:
                 Score += Shot1
-                #Tag on new strike check to temp list
-                temp.append(x-1)
-            elif Shot1 == 10 and Shot2 == 10:
-                Score += Shot2
-            else:
-                Score += Shot1
-                Score += Shot2
-                temp.append(x-2)
-        if x == 1:
-            Score += Shot1
-            temp.append(x-1)
-        if x == 0:
-            #Append no strike/spare just to keep the list in place.
-            temp.append(x)
-    #Remove now obsolete strike check.       
-    del(temp[0])
-    del(temp[0])
-    #Add newly worked out stike check to end of list.
-    temp.append(Strike)
-    return (Score, temp)
+                Strikecheck[x] = 0
+    
+    Strikecheck[0] = Strikecheck[1]
+    
+    if Shot1 == 10:
+            Strikecheck[1] = 2
+    elif Shot1 + Shot2 == 10:
+            Strikecheck[1] = 1
+    else:
+            Strikecheck[1] = 0
+    
+    return (Score, Strikecheck[0], Strikecheck[1])
 
-def Turn10(Strikecheck):
+def Turn10(Strike1, Strike2):
     Valid = False
     ShTemp1 = 0
     ShTemp2 = 0
@@ -106,26 +92,19 @@ def Turn10(Strikecheck):
             while Valid == False:
                 ShTemp3 = int(input('Please enter third shot: '))
                 Valid = ShotValidate(ShTemp3)
-    temp = []
-    temp.append(Strikecheck)
+                
+    temp = [Strike1, Strike2]
     #Tot up all the shots. If the third shot isn't attained
     #ShTemp3 = 0 so we're fine to do this
     Score = ShTemp1 + ShTemp2 + ShTemp3
-    for x in Strikecheck:    
+    for x in temp:  
         #Get current value from list
         if x == 2:
             Score += ShTemp1
             Score += ShTemp2
-            temp.append(x-2)
         if x == 1:
             Score += ShTemp1
-            temp.append(x-1)
-        if x == 0:
-            #Append no strike/spare just to keep the list in place.
-            temp.append(x)
-    #Remove now obsolete strike check.       
-    del(temp[0])
-    del(temp[0])
+    #Remove now obsolete strike check.     
     return Score
     
 def Validate():
@@ -181,21 +160,21 @@ def TurnValidate(a, b):
     if a+b <= 10:
         Bool = True
     return Bool
-    
-Striker = [0,0]
-Player = ['Luke', 0, Striker]
-g = 0
+
+
+TurnScore = 0
+PlayerScore = 0
+Player = ['Luke', 0, 0, 0]
 
 for a in range(1,11):
+    PlyaerScore = Player[1]
     if a == 10:
-        e = Turn10(Player[2])
+        TurnScore = Turn10(Player[2], Player[3])
     else:
-        e, f  = PlayTurn(Player[2])
-    g += e
-    del(Player[1])
-    del(Player[1])
-    Player.append(g)
-    Player.append(f)
+        TurnScore, Player[2], Player[3]  = PlayTurn(Player[2], Player[3])
+    PlayerScore += TurnScore
+    #Populate new player's Score.
+    Player[1] = PlayerScore
     
 print(Player)
 
