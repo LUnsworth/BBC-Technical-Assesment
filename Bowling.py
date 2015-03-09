@@ -4,7 +4,7 @@
 # Note: This version works as long as you don't be *too* clever with the inputs.
 #       It'll work if you stick to appropriate inputs.
 # TODO:
-#       Add proper type/input checks and validation.
+#       Add proper type/input checks and validation. STRING COMPARITORS!!!
 #       Add randomise turn functionality.
 #       Tidy up code and trim it down where necessary.
 #
@@ -12,6 +12,23 @@
 from random import randint
 #Global game dictionary. I know this is clunky, but there you go.
 Game = {}
+
+def PlayerSetup():
+    #Set up players at start of game
+    x = 0
+    Setup = False
+    while Setup == False:
+        Num = int(input('Enter number of players (max 6) '))
+        y = 1
+        #Check that appropriate number of players has been entered.
+        #TEST: Enter mix of bad numbers and strings.
+        if Num > 0 and Num <= 6:
+            for y in range(1,Num+1):
+                PName = str(input('Enter name of player: '))
+                Game[y] = [PName,0,0,0]
+            Setup = True
+        else:
+            print('Please enter a sensible number of players')
 
 #Algorithm for each turn.
 def PlayTurn(Strike1, Strike2):
@@ -76,13 +93,14 @@ def Turn10(Strike1, Strike2):
         Valid = ShotValidate(ShTemp2)
 
     if (ShTemp1 + ShTemp2) >= 10:
-        if ShTemp1 == 10 and ShTemp2 != 10:
-            ShTemp3 = 0
-        else:
-            Valid = False
-            while Valid == False:
-                ShTemp3 = int(input('Please enter third shot: '))
-                Valid = ShotValidate(ShTemp3)
+        Valid = False
+        while Valid == False:
+            ShTemp3 = int(input('Please enter third shot: '))
+            Valid = ShotValidate(ShTemp3)
+            if ShTemp1 == 10:
+                if ShTemp2 != 10:
+                    if ShTemp2 + ShTemp3 > 10:
+                        Valid = False
                 
     temp = [Strike1, Strike2]
     #Tot up all the shots. If the third shot isn't attained
@@ -154,23 +172,6 @@ def TurnValidate(a, b):
         Bool = True
     return Bool
 
-
-def PlayerSetup():
-    #Set up players
-    x = 0
-    Setup = False
-    while Setup == False:
-        Num = int(input('Enter number of players (max 6) '))
-        y = 1
-        #Check that appropriate number of players has been entered.
-        #TEST: Enter mix of bad numbers and strings.
-        if Num > 0 and Num <= 6:
-            for y in range(1,Num+1):
-                PName = input('Enter name of player: ')
-                Game[y] = [PName,0,0,0]
-            Setup = True
-        else:
-            print('Please enter a sensible number of players')
 
 def Score():
     print('Scores on the doors are...')
@@ -245,7 +246,8 @@ def Main():
                 break        
         if Quit == True:
             break
-    
+
+#Root executer.
 print('Welcome to bowling')
 Main()
 Score()
