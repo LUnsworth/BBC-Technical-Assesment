@@ -1,11 +1,7 @@
 #Bowling game source code - BBC Technical exercise - Luke Unsworth 19/02/15
 #
-# Version 1.0 Completed 09/03/15
-# Note: This version works as long as you don't be *too* clever with the inputs.
-#       It'll work if you stick to appropriate inputs.
+# Version 1.1 Completed 09/03/15
 # TODO:
-#       Add proper type/input checks and validation. STRING COMPARITORS!!!
-#       Add randomise turn functionality.
 #       Tidy up code and trim it down where necessary.
 #
 # Import useful things:
@@ -16,19 +12,27 @@ Game = {}
 def PlayerSetup():
     #Set up players at start of game
     x = 0
+    Num = InpCheck()
+    for y in range(1,Num+1):
+        #Always cast as string.ascii_letters
+        PName = str(input('Enter name of player: '))
+        Game[y] = [PName,0,0,0]
+
+def InpCheck():        
     Setup = False
     while Setup == False:
-        Num = int(input('Enter number of players (max 6) '))
-        y = 1
-        #Check that appropriate number of players has been entered.
-        #TEST: Enter mix of bad numbers and strings.
-        if Num > 0 and Num <= 6:
-            for y in range(1,Num+1):
-                PName = str(input('Enter name of player: '))
-                Game[y] = [PName,0,0,0]
-            Setup = True
+        #Cast input as string for speedy checking.
+        Num = str(input('Enter number of players (max 6): '))
+        if Num.isdigit() == True:
+            #Case as an integer and check boundaries.
+            Num = int(Num)
+            if Num < 1 or Num > 6:
+                print('Enter a sensible number of players.')
+            else:
+                Setup = True
         else:
-            print('Please enter a sensible number of players')
+            print('Please enter a valid number.')
+    return Num
 
 #Algorithm for each turn.
 def PlayTurn(Strike1, Strike2):
@@ -84,19 +88,19 @@ def Turn10(Strike1, Strike2):
     Score = 0
    
     while Valid == False:
-        ShTemp1 = int(input('Please enter your first shot: '))
-        Valid = ShotValidate(ShTemp1)
+        ShTemp1 = input('Please enter your first shot: ')
+        ShTemp1, Valid = ShotValidate(ShTemp1)
         
     Valid = False
     while Valid == False:
-        ShTemp2 = int(input('Please enter your second shot: '))
-        Valid = ShotValidate(ShTemp2)
+        ShTemp2 = input('Please enter your second shot: ')
+        ShTemp2, Valid = ShotValidate(ShTemp2)
 
     if (ShTemp1 + ShTemp2) >= 10:
         Valid = False
         while Valid == False:
-            ShTemp3 = int(input('Please enter third shot: '))
-            Valid = ShotValidate(ShTemp3)
+            ShTemp3 = input('Please enter third shot: ')
+            ShTemp3, Valid = ShotValidate(ShTemp3)
             if ShTemp1 == 10:
                 if ShTemp2 != 10:
                     if ShTemp2 + ShTemp3 > 10:
@@ -123,22 +127,19 @@ def Validate():
     ShTemp2 = 0
     
     while Valid == False:
-        ShTemp1 = int(input('Please enter your first shot: '))
-        Valid = ShotValidate(ShTemp1)
+        ShTemp1 = input('Please enter your first shot: ')
+        ShTemp1, Valid = ShotValidate(ShTemp1)
         
     Valid = False
     
     while Valid == False:
         if ShTemp1 != 10:
-            ShTemp2 = int(input('Please enter your second shot: '))
-            Valid = ShotValidate(ShTemp2)
+            ShTemp2 = input('Please enter your second shot: ')
+            ShTemp2, Valid = ShotValidate(ShTemp2)
             if Valid == True:
-                ShTemp1 = int(ShTemp1)
-                Valid = TurnValidate(int(ShTemp1),int(ShTemp2))
+                Valid = TurnValidate(ShTemp1, ShTemp2)
                 if Valid == False:
                     print('Invalid second shot.')
-                else:
-                    ShTemp2 = int(ShTemp2)
         else:
             Valid = True
     return (ShTemp1, ShTemp2)
@@ -147,23 +148,30 @@ def Validate():
 def ShotValidate(a):
     #Boolean validation check
     Bool = False
+    #Check input type. Integers are what we want.
     if type(a) == int:
         if a < 0:
-            print('Please enter score within valid boundaries of 0-10')
+            print('Please enter score within valid boundaries of 0-10.')
         elif a > 10:
-            print('Please enter score within valid boundaries of 0-10')
+            print('Please enter score within valid boundaries of 0-10.')
         else:
             Bool = True
+    #Strings can be handled with a bit of tweaking.
     elif type(a) == str:
-        if a < '0':
-            print('Please enter value above 0')
-        elif a > '10':
-            print('Please enter value less than 10')
+        #Check if the 
+        if a.isdigit() == True:
+            a = int(a)
+            if a < 0:
+                print('Please enter score within valid boundaries of 0-10.')
+            elif a > 10:
+                print('Please enter score within valid boundaries of 0-10.')
+            else:
+                Bool = True
         else:
-            Bool = True
+            print('Please enter a real integer number.')    
     else:
-        print('Incorrect entry... no idea what you did there')
-    return Bool
+        print('Incorrect entry... no idea what you did there.')
+    return a, Bool
 
 
 def TurnValidate(a, b):
@@ -173,7 +181,7 @@ def TurnValidate(a, b):
     return Bool
 
 
-def Score():
+def PrintScore():
     print('Scores on the doors are...')
     temp = []
     for Player in range(1,len(Game)+1):
@@ -198,7 +206,6 @@ def Main():
     print("""
     Rules for playing:
     If you want to manually enter scores, enter: "Play"
-    If you want to randomise the frame, enter: "Random"
     If you want to show the scoreboard, enter: "Score"
     If you're bored and want to go home, enter: "Quit"
     """)
@@ -223,12 +230,8 @@ def Main():
                     #Populate new player's Score.
                     PlayerList[1] = PlayerScore
                     TurnValidate = True
-                elif selection == 'Random' or selection == 'random':
-                    #TODO implement at a later date...
-                    print(randint(0,10))
-                    print('Feature not available, try another one')
                 elif selection == 'Score' or selection == 'score':
-                    Score()
+                    PrintScore()
                 elif selection == 'Quit' or selection == 'quit':
                     Quit = True
                     TurnValidate = True
@@ -237,7 +240,6 @@ def Main():
                     print("""
                     Not a valid choice... friendly reminder:
                     If you want to manually enter scores, enter: "Play"
-                    If you want to randomise the frame, enter: "Random"
                     If you want to show the scoreboard, enter: "Score"
                     If you're bored and want to go home, enter: "Quit"
                     """)
@@ -250,5 +252,5 @@ def Main():
 #Root executer.
 print('Welcome to bowling')
 Main()
-Score()
+PrintScore()
 print('Thank you for playing.')
