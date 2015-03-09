@@ -1,26 +1,17 @@
 #Bowling game source code - BBC Technical exercise - Luke Unsworth 19/02/15
 #
+# Version 1.0 Completed 09/03/15
+# Note: This version works as long as you don't be *too* clever with the inputs.
+#       It'll work if you stick to appropriate inputs.
 # TODO:
-#   - Write scoring "engine"
-#      - Function?
-#   - Create class of "Frame".
-#      - Int Shot1
-#      - Int Shot2
-#      - Int Total (because of strikes and stuff)
-#   - Create class of "Player"
-#      - Array of 10 "Frame".
-#      - String "PlayerName"
-#      - Int "PlayerScore"
-#
-#   Create Dict of players.
-#   
-#   - Testing:
-#      - MAKE SURE TO USE THE "XXX = INPUT('TESTING???') FOR CHECKING TO TEST.
-#
+#       Add proper type/input checks and validation.
+#       Add randomise turn functionality.
+#       Tidy up code and trim it down where necessary.
 #
 # Import useful things:
 from random import randint
-import collections
+#Global game dictionary. I know this is clunky, but there you go.
+Game = {}
 
 #Algorithm for each turn.
 def PlayTurn(Strike1, Strike2):
@@ -34,12 +25,11 @@ def PlayTurn(Strike1, Strike2):
     Score, Strike1, Strike2 = Shoot(Shot1, Shot2, Strike1, Strike2)
 
     return (Score, Strike1, Strike2)
-    
+  
 
 def Shoot(Shot1, Shot2, Strike1, Strike2):
     Score = 0
     #Do the shooting stuff.
-        
     Score = Shot1 + Shot2
     Strikecheck = [Strike1, Strike2]
     for x in range(0,2):
@@ -68,6 +58,7 @@ def Shoot(Shot1, Shot2, Strike1, Strike2):
     
     return (Score, Strikecheck[0], Strikecheck[1])
 
+#Algorithm for final turn.
 def Turn10(Strike1, Strike2):
     Valid = False
     ShTemp1 = 0
@@ -106,7 +97,8 @@ def Turn10(Strike1, Strike2):
             Score += ShTemp1
     #Remove now obsolete strike check.     
     return Score
-    
+
+#Validation for shot input.
 def Validate():
     Valid = False
     ShTemp1 = 0
@@ -133,10 +125,10 @@ def Validate():
             Valid = True
     return (ShTemp1, ShTemp2)
 
+
 def ShotValidate(a):
-
+    #Boolean validation check
     Bool = False
-
     if type(a) == int:
         if a < 0:
             print('Please enter score within valid boundaries of 0-10')
@@ -155,6 +147,7 @@ def ShotValidate(a):
         print('Incorrect entry... no idea what you did there')
     return Bool
 
+
 def TurnValidate(a, b):
     Bool = False
     if a+b <= 10:
@@ -162,86 +155,82 @@ def TurnValidate(a, b):
     return Bool
 
 
-TurnScore = 0
-PlayerScore = 0
-Player = ['Luke', 0, 0, 0]
+def PlayerSetup():
+    #Set up players
+    x = 0
+    Setup = False
+    while Setup == False:
+        Num = int(input('Enter number of players (max 6) '))
+        y = 1
+        #Check that appropriate number of players has been entered.
+        #TEST: Enter mix of bad numbers and strings.
+        if Num > 0 and Num <= 6:
+            for y in range(1,Num+1):
+                PName = input('Enter name of player: ')
+                Game[y] = [PName,0,0,0]
+            Setup = True
+        else:
+            print('Please enter a sensible number of players')
 
-for a in range(1,11):
-    PlyaerScore = Player[1]
-    if a == 10:
-        TurnScore = Turn10(Player[2], Player[3])
-    else:
-        TurnScore, Player[2], Player[3]  = PlayTurn(Player[2], Player[3])
-    PlayerScore += TurnScore
-    #Populate new player's Score.
-    Player[1] = PlayerScore
+def Score():
+    print('Scores on the doors are...')
+    temp = []
+    for Player in range(1,len(Game)+1):
+        temp = Game[Player]
+        print(temp[0], " - ", temp[1])
+
+def Main():
+    #Blank list to hold variour player information.
+    #Position 0 = Player name
+    #Position 1 = Player total score
+    #Position 2 = Strike flag from 2 frames prior
+    #Position 3 = Strike flag from 1 frame prior
+    PlayerList = []
+    PlayerScore = 0
+    TurnScore = 0
+    TurnValidate = False
+    Quit = False
+    #Populate dict of players. Game{} is global.
+    PlayerSetup()
     
-print(Player)
-
-#PlayTurn()
-
-'''
-print('Welcome to bowling')
-#Set up players
-x = 0
-Players_key = {}
-
-while x == 0:
-    Num = int(input('Enter number of players (max 6) '))
-    y = 1
-    #Check that appropriate number of players has been entered.
-    #TEST: Enter mix of bad numbers and strings.
-    if Num > 0 and Num <= 6:
-        while Num > 0:
-            PName = input('Enter name of player: ')
-            Players_key[PName] = []
-            Num = Num - 1
-            y+=1
-        x = 1
-    else:
-        print('Please enter a sensible number of players')
-
-#Keep entered players in entry order
-#Players_actual = collections.OrderdDict(Players_key)
-
-'''
-#Display rules and start entering the stuffs.
-'''
-print("""
-Rules for playing:
-If you want to manually enter scores, enter: "Play"
-If you want to randomise the frame, enter: "Random"
-If you want to show the scoreboard, enter: "Score"
-If you're bored and want to go home, enter: "Quit"
-""")
-Playscore = 0
-Temp = ''
-selection = ''
-Quit = False
-Turnvalidate = False
-#Set loop going for 10 frames.
-#3 frame test game
-for frame in range(1,3):
-    #Set loop going for each players turn within the frame.
-    for Temp in Players_key.keys():
-            #Finally, implement loop for each shot within players turn.
-            if frame == 10:
-                #Set 3 shots for final frame.
-                x = 3
-            else:
-                #2 shots otherwise.
-                x = 2
-            while Turnvalidate == False:
+    #Display rules and start the game.
+    print("""
+    Rules for playing:
+    If you want to manually enter scores, enter: "Play"
+    If you want to randomise the frame, enter: "Random"
+    If you want to show the scoreboard, enter: "Score"
+    If you're bored and want to go home, enter: "Quit"
+    """)
+    for Frame in range(1,11):
+        #Loop through each key in Game dict.
+        for Player in Game:
+            #Populate a working list with player entry
+            PlayerList = Game[Player]
+            PlayerScore = PlayerList[1]
+            #Set exit flag again.
+            TurnValidate = False
+            #Prompt for input.
+            while TurnValidate == False:
+                print(PlayerList[0], "'s turn.")
                 selection = input('Make selection: ')
                 if selection == 'Play' or selection == 'play':
-                    FrameScore = PlayTurn()
-                    print(FrameScore)
-                    #Players_key.keys[Temp].append(FrameScore)
+                    if Frame == 10:
+                        TurnScore = Turn10(PlayerList[2], PlayerList[3])
+                    else:
+                        TurnScore, PlayerList[2], PlayerList[3]  = PlayTurn(PlayerList[2], PlayerList[3])
+                    PlayerScore += TurnScore
+                    #Populate new player's Score.
+                    PlayerList[1] = PlayerScore
+                    TurnValidate = True
                 elif selection == 'Random' or selection == 'random':
+                    #TODO implement at a later date...
                     print(randint(0,10))
+                    print('Feature not available, try another one')
+                elif selection == 'Score' or selection == 'score':
+                    Score()
                 elif selection == 'Quit' or selection == 'quit':
                     Quit = True
-                    Turnvalidate = True
+                    TurnValidate = True
                     break
                 else:
                     print("""
@@ -251,15 +240,13 @@ for frame in range(1,3):
                     If you want to show the scoreboard, enter: "Score"
                     If you're bored and want to go home, enter: "Quit"
                     """)
+            Game[Player] = PlayerList
             if Quit == True:
-                break
-            
-    if Quit == True:
+                break        
+        if Quit == True:
             break
-           
-#For shits n giggs.
-
-print(Players_key)
-print(Players_actual)
+    
+print('Welcome to bowling')
+Main()
+Score()
 print('Thank you for playing.')
-'''
